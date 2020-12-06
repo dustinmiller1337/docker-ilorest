@@ -1,0 +1,27 @@
+---
+kind: pipeline
+type: docker
+name: trials
+
+trigger:
+  branch:
+    - main
+
+steps:
+  - name: yamllint
+    image: python:alpine
+    commands:
+      - pip3 install --quiet yamllint
+      - yamllint  --config-file .yamllint.config --strict .*.yml
+
+  - name: markdownlint
+    image: ruby:alpine
+    commands:
+      - gem install mdl
+      - mdl README.md
+
+  - name: hadolint
+    image: hadolint/hadolint:latest-debian
+    commands:
+      - hadolint --version
+      - hadolint  Dockerfile
